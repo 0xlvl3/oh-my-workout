@@ -1,7 +1,6 @@
 class Workout:
-    def __init__(self, date, exercise, sets, reps, weight):
+    def __init__(self, date, name, total_weight_lifted, duration):
         self.date = date
-        self.exercise = exercise
-        self.sets = sets
-        self.reps = reps
-        self.weight = weight
+        self.name = name
+        self.total_weight_lifted = total_weight_lifted
+        self.duration = duration
