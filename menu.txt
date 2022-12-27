@@ -1,1 +1,9 @@
-# add menu here
+:-------------:
+|Oh-my-workout|
+:-------------;
+
+1 - Start a workout 
+2 - List workouts 
+3 - Compare workouts
+4 - Weigh tracker 
+5 - 

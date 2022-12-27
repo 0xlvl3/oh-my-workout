@@ -17,11 +17,12 @@ def welcome():
     print(f"Welcome {GLOBAL_USER} creating your workout_data directory now..")
     # Creates directory for data
     os.mkdir("workout_data")
+    os.mkdir("user_details")
     # Saves username
     if os.path.exists:
 
         name = json.dumps({"username": GLOBAL_USER})
-        with open("workout_data/username.json", "w") as file:
+        with open("user_details/username.json", "w") as file:
             file.write(name)
     else:
         print("error")
