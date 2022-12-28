@@ -41,10 +41,12 @@ def main():
     Will be our main loop for our program
     """
     while True:
-        print("\n'ls' to see the menu again")
+        print("\n'0' to see the menu again")
         user_navigation = int(input(f"What do you want to do {GLOBAL_USER}\nInput: "))
         if user_navigation == 1:
             make_storage()
+        elif user_navigation == 0:
+            open_menu("menu.txt")
         else:
             print("Exiting program...")
             exit()
