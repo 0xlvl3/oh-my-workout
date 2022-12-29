@@ -7,12 +7,6 @@ import datetime
 import json
 import os
 
-# Check if user wants to add workout to a current directory within workout_data
-# If they want to use directory that exists create a new json file
-# If not create directory, then create the JSON file
-# Workout class name will also be directory that JSON file for a Eset gets saved to
-# Details about the workout within Workout class will be saved in the same JSON file as Eset class
-
 
 def working_out():
     start = time.time()
@@ -71,6 +65,7 @@ def working_out():
 
             elif add_new == "n":
                 break
+
         end = time.time()
 
         elapsed = end - start
