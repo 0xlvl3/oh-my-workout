@@ -1,6 +1,8 @@
 import json
+import os
 import datetime
 import calendar
+
 
 # Prompt to enter weigh in
 # Check list of weigh ins
@@ -37,9 +39,76 @@ week_data = {
     "Sunday": 0,
 }
 
+# Check for directory
+# If not will create directory and also the week weigh in file
+if not os.path.exists(f"user_details/weigh_in"):
+    print("Creating directories and files")
+    os.mkdir(f"user_details/weigh_in")
+    with open(f"user_details/weigh_in/week_{week_number}.json", "w") as file:
+        json.dump(week_data, file, indent=4)
+else:
+    print("Directory exists")
+
+# Getting the week split from the current week
+current_week_file = f"user_details/weigh_in/week_{week_number}.json"
+current_week_comparison = current_week_file.split("_")[3].split(".json")[0]
+print(current_week_comparison)
+print(current_week_file)
+current_week_comparison = int(current_week_comparison)
+print(current_week_comparison)
+
+# Compare week in file name if not the same make new week file
+if week_number != current_week_comparison:
+    print("Creating new week file")
+
+    # Create new week file
+    with open(f"user_details/weigh_in/week_{week_number}.json") as file:
+        json.dump(week_data, file, indent=4)
+
+else:
+    print(f"We are still in week {week_number}")
+
 
 def daily_weigh():
-    print("lol")
+    # Daily weigh in if not type weigh if they have tell them they have
+    def switch(day_of_week):
+        if day_of_week == 0:
+            print("Monday")
+            return "Monday"
+        elif day_of_week == 1:
+            print("Tuesday")
+            return "Tuesday"
+        elif day_of_week == 2:
+            print("Wednesday")
+            return "Wednesday"
+        elif day_of_week == 3:
+            print("Thursday")
+            return "Thursday"
+        elif day_of_week == 4:
+            print("Friday")
+            return "Friday"
+        elif day_of_week == 5:
+            print("Saturday")
+            return "Saturday"
+        elif day_of_week == 6:
+            print("Sunday")
+            return "Sunday"
+        else:
+            print("Error")
+
+    day = switch(day_of_week)
+    print(day)
+    with open(f"user_details/weigh_in/week_{week_number}.json", "r") as file:
+        data = json.load(file)
+
+    daily = input("What are you weighing in at this morning: ")
+
+    data[day] = daily
+    with open(f"user_details/weigh_in/week_{week_number}.json", "w") as file:
+        json.dump(data, file, indent=4)
+
+
+daily_weigh()
 
 
 def weigh_in():
@@ -55,7 +124,7 @@ def weigh_in():
         user_choice = input(
             """
 To see the menu again enter '0'
-Navigate to:    """
+Navigate to: """
         )
         if user_choice.isdigit():
             user_choice = int(user_choice)
