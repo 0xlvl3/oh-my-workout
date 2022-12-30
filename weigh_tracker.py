@@ -2,13 +2,22 @@ import json
 import os
 import datetime
 import calendar
-
+import matplotlib.pyplot as plt
 
 # Prompt to enter weigh in
 # Check list of weigh ins
 # Give median of current week
 # Show graph showing weigh ins
 # Create a dictionary that saves an id and weigh as a 7 day dictionary
+
+menu = """
+1 ) Daily weigh in
+2 ) Show weekly stats 
+3 ) Give median for week 
+4 ) Show graph view
+5 ) Exit to menu
+          """
+
 
 # Get current date and time
 now = datetime.datetime.now()
@@ -68,57 +77,135 @@ if week_number != current_week_comparison:
 else:
     print(f"We are still in week {week_number}")
 
-
+# Will take in daily weight; once input is in for the day it won't ask again
+# Possible ask in the menu to set weigh in again for the day ?
 def daily_weigh():
     # Daily weigh in if not type weigh if they have tell them they have
     def switch(day_of_week):
         if day_of_week == 0:
-            print("Monday")
+            # print("Monday")
             return "Monday"
         elif day_of_week == 1:
-            print("Tuesday")
+            # print("Tuesday")
             return "Tuesday"
         elif day_of_week == 2:
-            print("Wednesday")
+            # print("Wednesday")
             return "Wednesday"
         elif day_of_week == 3:
-            print("Thursday")
+            # print("Thursday")
             return "Thursday"
         elif day_of_week == 4:
-            print("Friday")
+            # print("Friday")
             return "Friday"
         elif day_of_week == 5:
-            print("Saturday")
+            # print("Saturday")
             return "Saturday"
         elif day_of_week == 6:
-            print("Sunday")
+            # print("Sunday")
             return "Sunday"
         else:
             print("Error")
 
     day = switch(day_of_week)
-    print(day)
+    # print(day) will print day associated with day_of_week, starting at 0 as zero-indexed.
     with open(f"user_details/weigh_in/week_{week_number}.json", "r") as file:
         data = json.load(file)
 
-    daily = input("What are you weighing in at this morning: ")
+    # If weigh in was done already skip this
+    value = data[day]
+    # print(value) will return value of day in our JSON file
+    if value == "0":
+        daily = input("What are you weighing in at this morning: ")
+        data[day] = daily
 
-    data[day] = daily
-    with open(f"user_details/weigh_in/week_{week_number}.json", "w") as file:
-        json.dump(data, file, indent=4)
+        with open(f"user_details/weigh_in/week_{week_number}.json", "w") as file:
+
+            json.dump(data, file, indent=4)
+
+    else:
+        print("You already weighed in today, welcome back")
 
 
-daily_weigh()
+# Will open file replace this in other areas later
+def open_week(week_number):
+    with open(f"user_details/weigh_in/week_{week_number}.json", "r") as file:
+        data = json.load(file)
+        return data
+
+
+# Show weekly weigh ins
+def weekly_stats():
+    data = open_week(week_number)
+
+    print(f"\nWeekly statistics for week {week_number}")
+    print("-----------------------------")
+    for key, value in data.items():
+        print(f"{key}: {value}")
+    print("-----------------------------")
+
+
+# Used in weekly_median
+def get_median(data):
+    week_total = 0
+    for value in data.values():
+        value = float(value)
+        print(value)
+        week_total = value + week_total
+    print(f"\nWeigh in total: {week_total}")
+    median = round(week_total / 7.0, 2)
+    print(f"Your median for the week is: {median}")
+
+
+# Give median for week depending on data.
+def weekly_median():
+    # Variables used
+    data = open_week(week_number)
+
+    while True:
+        navigate_to = input(
+            """
+1 ) See current week median 
+2 ) See a specific week median 
+3 ) Exit to menu
+Navigate to:    """
+        )
+
+        if navigate_to.isdigit():
+            navigate_to = int(navigate_to)
+            if navigate_to == 1:
+                get_median(data)
+            elif navigate_to == 2:
+                week_choice = input("Write the week number you wish to see: ")
+                int(week_choice)
+                data = open_week(week_choice)
+                get_median(data)
+            else:
+                print(menu)
+                break
+
+
+def graph_view():
+    # Days in week
+    x = [1, 2, 3, 4, 5, 6, 7]
+    y = []
+    # Ask user what week to see
+    user_choice = input(f"Place a week you want to see: ")
+    data = open_week(user_choice)
+    for value in data.values():
+        y.append(value)
+
+    plt.plot(x, y)
+
+    plt.scatter(x, y, color="red", marker="x", s=100)
+    plt.ylim(79, 82)
+    plt.title(f"Week {user_choice}")
+    plt.xlabel("Week days")
+    plt.ylabel("Weigh in")
+
+    plt.show()
 
 
 def weigh_in():
-    menu = """
-1 ) Daily weigh in
-2 ) Show weekly stats 
-3 ) Give median for week 
-4 ) Show graph view
-5 ) Exit to menu
-          """
     print(menu)
     while True:
         user_choice = input(
@@ -131,13 +218,13 @@ Navigate to: """
             if user_choice == 0:
                 print(menu)
             elif user_choice == 1:
-                print("\nDaily weigh in")
+                daily_weigh()
             elif user_choice == 2:
-                print("\nShow weekly stats")
+                weekly_stats()
             elif user_choice == 3:
-                print("\nGive median for week")
+                weekly_median()
             elif user_choice == 4:
-                print("\nShow graph view")
+                graph_view()
             elif user_choice == 5:
                 break
         else:
