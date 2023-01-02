@@ -36,7 +36,7 @@ def open_week(week_number):
     """
     Function will open specified week number
     """
-    with open(f"user_details/weigh_in/week_{week_number}.json", "r") as file:
+    with open(f"user_details/weigh_in/week_{week_number}.json") as file:
         data = json.load(file)
         return data
 
@@ -71,15 +71,17 @@ week_number = now.isocalendar()[1]
 # print(f"Week number is: {week_number}")
 
 # Week data that gets stored in JSON.
-week_data = {
-    "Monday": 0,
-    "Tuesday": 0,
-    "Wednesday": 0,
-    "Thursday": 0,
-    "Friday": 0,
-    "Saturday": 0,
-    "Sunday": 0,
-}
+def week():
+    week_data = {
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Saturday": 0,
+        "Sunday": 0,
+    }
+    return week_data
 
 
 def directory_check():
@@ -96,44 +98,58 @@ def directory_check():
         print("Directory exists")
 
 
-def directory_week_number():
-    """
-    Function will parse the week number from the current week file path,
-    used for comparison
-    """
-    current_week_file = f"user_details/weigh_in/week_{week_number}.json"
-    current_week_comparison = current_week_file.split("_")[3].split(".json")[0]
-    # print(current_week_comparison)
-    # print(current_week_file)
-    current_week_comparison = int(current_week_comparison)
-    return current_week_comparison
+# def directory_week_number():
+#   """
+#  Function will parse the week number from the current week file path,
+# used for comparison
+# """
+# current_week_file = f"user_details/weigh_in/week_{week_number}.json"
+# current_week_comparison = current_week_file.split("_")[3].split(".json")[0]
+# print(current_week_comparison)
+# print(current_week_file)
+# current_week_comparison = int(current_week_comparison)
+# return current_week_comparison
 
 
-def week_check(current_week_comparison):
+def new_week():
     """
-    Function compares current week to current week file, if equal
-    no file will be created, if it isn't new week will be created
+    Function will create new file for the week if new week
     """
-
-    # Compare week in file name if not the same make new week file.
-    if week_number != current_week_comparison:
-        print("Creating new week file")
-
-        # Create new week file.
-        with open(f"user_details/weigh_in/week_{week_number}.json") as file:
-            json.dump(week_data, file, indent=4)
+    file_path = f"user_details/weigh_in/week_{week_number}.json"
+    if not os.path.exists(file_path):
+        write_data(week_number, week_data)
     else:
-        print(f"We are still in week {week_number}")
+        print("week good")
+
+
+new_week()
+
+
+# def week_check(current_week_comparison):
+#    """
+#    Function compares current week to current week file, if equal
+#    no file will be created, if it isn't new week will be created
+#    """
+
+# Compare week in file name if not the same make new week file.
+#    if week_number != current_week_comparison:
+#        print("Creating new week file")
+
+# Create new week file.
+#        with open(f"user_details/weigh_in/week_{week_number}.json", "w") as file:
+#            json.dump(week_data, file, indent=4)
+#    else:
+#        print(f"We are still in week {week_number}")
 
 
 # Check if directory exists.
-directory_check()
+# directory_check()
 
 # Storing week number in comparison variable.
-current_week_comparison = directory_week_number()
-
+# current_week_comparison = directory_week_number()
+# print(current_week_comparison)
 # Compare week in file name if not the same make new week file.
-week_check(current_week_comparison)
+# week_check(current_week_comparison)
 
 
 # Will take in daily weight; once input is in for the day it won't ask again.
@@ -182,10 +198,24 @@ def daily_weigh():
 
     # If weigh not done.
     value = data[day]
-    if value == "0":
+    if value == 0:
         daily = input("What are you weighing in at this morning: ")
         data[day] = daily
         write_data(week_number, data)
+
+    elif value != 0:
+        user_input = input(
+            f"""
+Do you want to update your daily weigh in at {value}
+(Y/N): """
+        ).lower()
+        if user_input == "y":
+            daily = input("What are you weighing in at this morning: ")
+            data[day] = daily
+            write_data(week_number, data)
+        else:
+            print("\n### You already weighed in today, returning to menu.")
+            print(menu)
 
     # Return to menu.
     else:
@@ -264,6 +294,7 @@ def graph_view():
     user_choice = input(f"Place a week you want to see: ")
     data = open_week(user_choice)
     for value in data.values():
+        value = str(value)
         y.append(value)
 
     fig, ax = plt.subplots()
